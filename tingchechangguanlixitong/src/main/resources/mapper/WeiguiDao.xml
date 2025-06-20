@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.WeiguiDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.cheliang_id as cheliangId
+        ,a.weigui_name as weiguiName
+        ,a.weigui_uuid_number as weiguiUuidNumber
+        ,a.weigui_photo as weiguiPhoto
+        ,a.weigui_address as weiguiAddress
+        ,a.weigui_types as weiguiTypes
+        ,a.weigui_content as weiguiContent
+        ,a.weigui_delete as weiguiDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.WeiguiView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,cheliang.yonghu_id as cheliangYonghuId
+        ,cheliang.cheliang_name as cheliangName
+        ,cheliang.cheliang_uuid_number as cheliangUuidNumber
+        ,cheliang.cheliang_photo as cheliangPhoto
+        ,cheliang.cheliang_paizhao as cheliangPaizhao
+        ,cheliang.cheliang_file as cheliangFile
+        ,cheliang.cheliang_types as cheliangTypes
+        ,cheliang.cheliang_content as cheliangContent
+        ,cheliang.cheliang_delete as cheliangDelete
+
+        FROM weigui  a
+        left JOIN cheliang cheliang ON a.cheliang_id = cheliang.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.cheliangId != null and params.cheliangId != ''">
+                and (
+                    a.cheliang_id = #{params.cheliangId}
+                )
+            </if>
+            <if test=" params.weiguiName != '' and params.weiguiName != null and params.weiguiName != 'null' ">
+                and a.weigui_name like CONCAT('%',#{params.weiguiName},'%')
+            </if>
+            <if test=" params.weiguiUuidNumber != '' and params.weiguiUuidNumber != null and params.weiguiUuidNumber != 'null' ">
+                and a.weigui_uuid_number like CONCAT('%',#{params.weiguiUuidNumber},'%')
+            </if>
+            <if test=" params.weiguiAddress != '' and params.weiguiAddress != null and params.weiguiAddress != 'null' ">
+                and a.weigui_address like CONCAT('%',#{params.weiguiAddress},'%')
+            </if>
+            <if test="params.weiguiTypes != null and params.weiguiTypes != ''">
+                and a.weigui_types = #{params.weiguiTypes}
+            </if>
+            <if test=" params.weiguiContent != '' and params.weiguiContent != null and params.weiguiContent != 'null' ">
+                and a.weigui_content like CONCAT('%',#{params.weiguiContent},'%')
+            </if>
+            <if test="params.weiguiDeleteStart != null and params.weiguiDeleteStart != ''">
+                <![CDATA[  and a.weigui_delete >= #{params.weiguiDeleteStart}   ]]>
+            </if>
+            <if test="params.weiguiDeleteEnd != null and params.weiguiDeleteEnd != ''">
+                <![CDATA[  and a.weigui_delete <= #{params.weiguiDeleteEnd}   ]]>
+            </if>
+             <if test="params.weiguiDelete != null and params.weiguiDelete != ''">
+                and a.weigui_delete = #{params.weiguiDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断车辆的id不为空 -->
+            <if test=" params.cheliangIdNotNull != '' and params.cheliangIdNotNull != null and params.cheliangIdNotNull != 'null' ">
+                and a.cheliang_id IS NOT NULL
+            </if>
+            <if test="params.yonghuId != null  and params.yonghuId != ''">
+                and cheliang.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test=" params.cheliangName != '' and params.cheliangName != null and params.cheliangName != 'null' ">
+                and cheliang.cheliang_name like CONCAT('%',#{params.cheliangName},'%')
+            </if>
+            <if test=" params.cheliangUuidNumber != '' and params.cheliangUuidNumber != null and params.cheliangUuidNumber != 'null' ">
+                and cheliang.cheliang_uuid_number like CONCAT('%',#{params.cheliangUuidNumber},'%')
+            </if>
+            <if test=" params.cheliangPaizhao != '' and params.cheliangPaizhao != null and params.cheliangPaizhao != 'null' ">
+                and cheliang.cheliang_paizhao like CONCAT('%',#{params.cheliangPaizhao},'%')
+            </if>
+            <if test="params.cheliangTypes != null  and params.cheliangTypes != ''">
+                and cheliang.cheliang_types = #{params.cheliangTypes}
+            </if>
+
+            <if test=" params.cheliangContent != '' and params.cheliangContent != null and params.cheliangContent != 'null' ">
+                and cheliang.cheliang_content like CONCAT('%',#{params.cheliangContent},'%')
+            </if>
+            <if test="params.cheliangDeleteStart != null  and params.cheliangDeleteStart != '' ">
+                <![CDATA[  and cheliang.cheliang_delete >= #{params.cheliangDeleteStart}   ]]>
+            </if>
+            <if test="params.cheliangDeleteEnd != null  and params.cheliangDeleteEnd != '' ">
+                <![CDATA[  and cheliang.cheliang_delete <= #{params.cheliangDeleteEnd}   ]]>
+            </if>
+            <if test="params.cheliangDelete != null  and params.cheliangDelete != '' ">
+                and cheliang.cheliang_delete = #{params.cheliangDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

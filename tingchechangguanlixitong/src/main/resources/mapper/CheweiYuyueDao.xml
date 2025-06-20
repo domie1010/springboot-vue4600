@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.CheweiYuyueDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.chewei_yuyue_uuid_number as cheweiYuyueUuidNumber
+        ,a.chewei_id as cheweiId
+        ,a.cheliang_id as cheliangId
+        ,a.chewei_yuyue_text as cheweiYuyueText
+        ,a.chewei_yuyue_file as cheweiYuyueFile
+        ,a.chewei_yuyue_shichang as cheweiYuyueShichang
+        ,a.insert_time as insertTime
+        ,a.chewei_yuyue_yesno_types as cheweiYuyueYesnoTypes
+        ,a.chewei_yuyue_yesno_text as cheweiYuyueYesnoText
+        ,a.chewei_yuyue_shenhe_time as cheweiYuyueShenheTime
+        ,a.chewei_yuyue_time as cheweiYuyueTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.CheweiYuyueView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,cheliang.yonghu_id as cheliangYonghuId
+        ,cheliang.cheliang_name as cheliangName
+        ,cheliang.cheliang_uuid_number as cheliangUuidNumber
+        ,cheliang.cheliang_photo as cheliangPhoto
+        ,cheliang.cheliang_paizhao as cheliangPaizhao
+        ,cheliang.cheliang_file as cheliangFile
+        ,cheliang.cheliang_types as cheliangTypes
+        ,cheliang.cheliang_content as cheliangContent
+        ,cheliang.cheliang_delete as cheliangDelete
+        ,chewei.chewei_name as cheweiName
+        ,chewei.chewei_uuid_number as cheweiUuidNumber
+        ,chewei.chewei_photo as cheweiPhoto
+        ,chewei.chewei_address as cheweiAddress
+        ,chewei.chewei_tingchefei as cheweiTingchefei
+        ,chewei.chewei_types as cheweiTypes
+        ,chewei.chewei_content as cheweiContent
+        ,chewei.shangxia_types as shangxiaTypes
+        ,chewei.chewei_delete as cheweiDelete
+
+        FROM chewei_yuyue  a
+        left JOIN cheliang cheliang ON a.cheliang_id = cheliang.id
+        left JOIN chewei chewei ON a.chewei_id = chewei.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.cheweiYuyueUuidNumber != '' and params.cheweiYuyueUuidNumber != null and params.cheweiYuyueUuidNumber != 'null' ">
+                and a.chewei_yuyue_uuid_number like CONCAT('%',#{params.cheweiYuyueUuidNumber},'%')
+            </if>
+            <if test="params.cheweiId != null and params.cheweiId != ''">
+                and (
+                    a.chewei_id = #{params.cheweiId}
+                )
+            </if>
+            <if test="params.cheliangId != null and params.cheliangId != ''">
+                and (
+                    a.cheliang_id = #{params.cheliangId}
+                )
+            </if>
+            <if test=" params.cheweiYuyueText != '' and params.cheweiYuyueText != null and params.cheweiYuyueText != 'null' ">
+                and a.chewei_yuyue_text like CONCAT('%',#{params.cheweiYuyueText},'%')
+            </if>
+            <if test="params.cheweiYuyueShichangStart != null and params.cheweiYuyueShichangStart != ''">
+                <![CDATA[  and a.chewei_yuyue_shichang >= #{params.cheweiYuyueShichangStart}   ]]>
+            </if>
+            <if test="params.cheweiYuyueShichangEnd != null and params.cheweiYuyueShichangEnd != ''">
+                <![CDATA[  and a.chewei_yuyue_shichang <= #{params.cheweiYuyueShichangEnd}   ]]>
+            </if>
+             <if test="params.cheweiYuyueShichang != null and params.cheweiYuyueShichang != ''">
+                and a.chewei_yuyue_shichang = #{params.cheweiYuyueShichang}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test="params.cheweiYuyueYesnoTypes != null and params.cheweiYuyueYesnoTypes != ''">
+                and a.chewei_yuyue_yesno_types = #{params.cheweiYuyueYesnoTypes}
+            </if>
+            <if test=" params.cheweiYuyueYesnoText != '' and params.cheweiYuyueYesnoText != null and params.cheweiYuyueYesnoText != 'null' ">
+                and a.chewei_yuyue_yesno_text like CONCAT('%',#{params.cheweiYuyueYesnoText},'%')
+            </if>
+            <if test=" params.cheweiYuyueShenheTimeStart != '' and params.cheweiYuyueShenheTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chewei_yuyue_shenhe_time) >= UNIX_TIMESTAMP(#{params.cheweiYuyueShenheTimeStart}) ]]>
+            </if>
+            <if test=" params.cheweiYuyueShenheTimeEnd != '' and params.cheweiYuyueShenheTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chewei_yuyue_shenhe_time) <= UNIX_TIMESTAMP(#{params.cheweiYuyueShenheTimeEnd}) ]]>
+            </if>
+            <if test="params.cheweiYuyueShenheTime != null and params.cheweiYuyueShenheTime != ''">
+                and a.chewei_yuyue_shenhe_time = #{params.cheweiYuyueShenheTime}
+            </if>
+            <if test=" params.cheweiYuyueTimeStart != '' and params.cheweiYuyueTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chewei_yuyue_time) >= UNIX_TIMESTAMP(#{params.cheweiYuyueTimeStart}) ]]>
+            </if>
+            <if test=" params.cheweiYuyueTimeEnd != '' and params.cheweiYuyueTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.chewei_yuyue_time) <= UNIX_TIMESTAMP(#{params.cheweiYuyueTimeEnd}) ]]>
+            </if>
+            <if test="params.cheweiYuyueTime != null and params.cheweiYuyueTime != ''">
+                and a.chewei_yuyue_time = #{params.cheweiYuyueTime}
+            </if>
+
+                <!-- 判断车辆的id不为空 -->
+            <if test=" params.cheliangIdNotNull != '' and params.cheliangIdNotNull != null and params.cheliangIdNotNull != 'null' ">
+                and a.cheliang_id IS NOT NULL
+            </if>
+            <if test="params.yonghuId != null  and params.yonghuId != ''">
+                and cheliang.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test=" params.cheliangName != '' and params.cheliangName != null and params.cheliangName != 'null' ">
+                and cheliang.cheliang_name like CONCAT('%',#{params.cheliangName},'%')
+            </if>
+            <if test=" params.cheliangUuidNumber != '' and params.cheliangUuidNumber != null and params.cheliangUuidNumber != 'null' ">
+                and cheliang.cheliang_uuid_number like CONCAT('%',#{params.cheliangUuidNumber},'%')
+            </if>
+            <if test=" params.cheliangPaizhao != '' and params.cheliangPaizhao != null and params.cheliangPaizhao != 'null' ">
+                and cheliang.cheliang_paizhao like CONCAT('%',#{params.cheliangPaizhao},'%')
+            </if>
+            <if test="params.cheliangTypes != null  and params.cheliangTypes != ''">
+                and cheliang.cheliang_types = #{params.cheliangTypes}
+            </if>
+
+            <if test=" params.cheliangContent != '' and params.cheliangContent != null and params.cheliangContent != 'null' ">
+                and cheliang.cheliang_content like CONCAT('%',#{params.cheliangContent},'%')
+            </if>
+            <if test="params.cheliangDeleteStart != null  and params.cheliangDeleteStart != '' ">
+                <![CDATA[  and cheliang.cheliang_delete >= #{params.cheliangDeleteStart}   ]]>
+            </if>
+            <if test="params.cheliangDeleteEnd != null  and params.cheliangDeleteEnd != '' ">
+                <![CDATA[  and cheliang.cheliang_delete <= #{params.cheliangDeleteEnd}   ]]>
+            </if>
+            <if test="params.cheliangDelete != null  and params.cheliangDelete != '' ">
+                and cheliang.cheliang_delete = #{params.cheliangDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(cheliang.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断车位的id不为空 -->
+            <if test=" params.cheweiIdNotNull != '' and params.cheweiIdNotNull != null and params.cheweiIdNotNull != 'null' ">
+                and a.chewei_id IS NOT NULL
+            </if>
+            <if test=" params.cheweiName != '' and params.cheweiName != null and params.cheweiName != 'null' ">
+                and chewei.chewei_name like CONCAT('%',#{params.cheweiName},'%')
+            </if>
+            <if test=" params.cheweiUuidNumber != '' and params.cheweiUuidNumber != null and params.cheweiUuidNumber != 'null' ">
+                and chewei.chewei_uuid_number like CONCAT('%',#{params.cheweiUuidNumber},'%')
+            </if>
+            <if test=" params.cheweiAddress != '' and params.cheweiAddress != null and params.cheweiAddress != 'null' ">
+                and chewei.chewei_address like CONCAT('%',#{params.cheweiAddress},'%')
+            </if>
+            <if test="params.cheweiTingchefeiStart != null ">
+                <![CDATA[  and chewei.chewei_tingchefei >= #{params.cheweiTingchefeiStart}   ]]>
+            </if>
+            <if test="params.cheweiTingchefeiEnd != null ">
+                <![CDATA[  and chewei.chewei_tingchefei <= #{params.cheweiTingchefeiEnd}   ]]>
+            </if>
+            <if test="params.cheweiTingchefei != null and params.cheweiTingchefei != ''">
+                and a.chewei_tingchefei = #{params.cheweiTingchefei}
+            </if>
+            <if test="params.cheweiTypes != null  and params.cheweiTypes != ''">
+                and chewei.chewei_types = #{params.cheweiTypes}
+            </if>
+
+            <if test=" params.cheweiContent != '' and params.cheweiContent != null and params.cheweiContent != 'null' ">
+                and chewei.chewei_content like CONCAT('%',#{params.cheweiContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and chewei.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.cheweiDeleteStart != null  and params.cheweiDeleteStart != '' ">
+                <![CDATA[  and chewei.chewei_delete >= #{params.cheweiDeleteStart}   ]]>
+            </if>
+            <if test="params.cheweiDeleteEnd != null  and params.cheweiDeleteEnd != '' ">
+                <![CDATA[  and chewei.chewei_delete <= #{params.cheweiDeleteEnd}   ]]>
+            </if>
+            <if test="params.cheweiDelete != null  and params.cheweiDelete != '' ">
+                and chewei.chewei_delete = #{params.cheweiDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(chewei.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(chewei.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
